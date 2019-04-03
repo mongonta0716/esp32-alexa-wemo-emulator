@@ -19,6 +19,7 @@ private:
         String deviceStatus;
         CallbackFunction onCallback;
         CallbackFunction offCallback;
+        CallbackFunction statusCallback;
 
         void startWebServer();
         void handleEventservice();
@@ -27,11 +28,14 @@ private:
         void handleSetupXml();
 public:
         WemoSwitch();
-        WemoSwitch(String alexaInvokeName, unsigned int port, CallbackFunction onCallback, CallbackFunction offCallback);
+        WemoSwitch(String alexaInvokeName, unsigned int port,
+                   CallbackFunction onCallback, CallbackFunction offCallback, CallbackFunction statusCallback);
         ~WemoSwitch();
         String getAlexaInvokeName();
         void serverLoop();
         void respondToSearch(IPAddress& senderIP, unsigned int senderPort);
+        void setDeviceStatus(String deviceSts);
+        String getDeviceStatus();
 };
 
 #endif

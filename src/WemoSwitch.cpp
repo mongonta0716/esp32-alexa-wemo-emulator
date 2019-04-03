@@ -8,7 +8,9 @@ WemoSwitch::WemoSwitch(){
     //Serial.println("default constructor called");
 }
 //WemoSwitch::WemoSwitch(String alexaInvokeName,unsigned int port){
-WemoSwitch::WemoSwitch(String alexaInvokeName, unsigned int port, CallbackFunction oncb, CallbackFunction offcb){
+WemoSwitch::WemoSwitch(String alexaInvokeName, unsigned int port,
+                       CallbackFunction oncb, CallbackFunction offcb, CallbackFunction stscb
+                      ){
     uint32_t uniqueSwitchId = /*ESP.getChipId()*/ 123456+ port  ;
     char uuid[64];
     sprintf_P(uuid, PSTR("38323636-4558-4dda-9188-cda0e6%02x%02x%02x"),
@@ -23,6 +25,7 @@ WemoSwitch::WemoSwitch(String alexaInvokeName, unsigned int port, CallbackFuncti
     localPort = port;
     onCallback = oncb;
     offCallback = offcb;
+    statusCallback = stscb;
     deviceStatus = "0";
 
     startWebServer();
@@ -153,6 +156,7 @@ void WemoSwitch::handleUpnpControl(){
 
   if(request.indexOf("<u:GetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">") > 0) {
       Serial.println("Got GetStatus request");
+      statusCallback();
       response_xml =  "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
                         "<s:Body>"
                           "<u:GetBinaryStateResponse xmlns:u=\"urn:Belkin:service:basicevent:1\">"
@@ -249,4 +253,12 @@ void WemoSwitch::respondToSearch(IPAddress& senderIP, unsigned int senderPort) {
   UDP.endPacket();
 
    Serial.println("Response sent !");
+}
+
+void WemoSwitch::setDeviceStatus(String deviceSts) {
+  deviceStatus = deviceSts;
+}
+
+String WemoSwitch::getDeviceStatus() {
+  return deviceStatus;
 }
